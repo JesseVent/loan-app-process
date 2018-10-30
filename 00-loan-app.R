@@ -1,9 +1,8 @@
-library(tidyverse)
 library(xesreadR)
 library(processanimateR)
 library(processmapR)
 
-loan  <- xesreadR::read_xes("loan_app_data.xes")
+loan  <- xesreadR::read_xes("https://solutiondesign.io/blog/data/loan_app_data.xes")
 
 graph <- processmapR::process_map(loan, type_edges = performance(mean), render = F)
 model <- DiagrammeR::add_global_graph_attrs(graph,
