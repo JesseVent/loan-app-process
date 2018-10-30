@@ -6,11 +6,12 @@ An example of parallel/negative duration processes, unsure on how to avoid this 
 ### Code
 
 ```R
+
 library(xesreadR)
 library(processanimateR)
 library(processmapR)
 
-loan  <- xesreadR::read_xes("loan_app_data.xes")
+loan  <- xesreadR::read_xes("https://solutiondesign.io/blog/data/loan_app_data.xes")
 
 graph <- processmapR::process_map(loan, type_edges = performance(mean), render = F)
 model <- DiagrammeR::add_global_graph_attrs(graph,
@@ -19,6 +20,7 @@ model <- DiagrammeR::add_global_graph_attrs(graph,
             attr_type = c("graph", "graph", "graph"))
 
 animate_process(loan, model, mode = "relative", duration = 240)
+
 ```
 
 ### Output
