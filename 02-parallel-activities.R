@@ -28,7 +28,7 @@ rank_sequence <- function(x) {
 #   ____________________________________________________________________________
 #   Loan Application BPI17 Event Logs                                       ####
 
-loan      <- xesreadR::read_xes("loan_app_data.xes")
+loan  <- xesreadR::read_xes("https://solutiondesign.io/blog/data/loan_app_data.xes")
 
 log_df <- loan %>% as.data.frame() %>%
   select(CASE_concept_name, activity_instance_id, activity_id, resource_id, lifecycle_id, timestamp) %>%
