@@ -30,7 +30,7 @@ rank_sequence <- function(x) {
 
 loan      <- xesreadR::read_xes("loan_app_data.xes")
 
-log_df <- loan %>% as.data.frame()
+log_df <- loan %>% as.data.frame() %>%
   select(CASE_concept_name, activity_instance_id, activity_id, resource_id, lifecycle_id, timestamp) %>%
   group_by(CASE_concept_name, activity_instance_id, activity_id, resource_id) %>%
   spread(lifecycle_id, timestamp) %>%
