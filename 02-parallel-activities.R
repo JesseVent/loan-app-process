@@ -14,7 +14,19 @@ remove_activity <- function(activity, event_log) {
   arrange(case_id, rank) %>%
   ungroup() %>%
   group_by(case_id) %>%
-  mutate(next_start = lead(start))
+  mutate(next_start = lead(start),
+         next_end = lead(end),
+         throughput_time = as.numeric(difftime(end, first(start), units = "mins")),
+         cycle_time = as.numeric(difftime(end, start, units = "mins"))) %>%
+  mutate(time_taken = cumsum(cycle_time),
+         start_next_start = as.numeric(difftime(next_start, start, units = "mins")),
+         end_next_end = as.numeric(difftime(next_end, end, units = "mins"))) %>%
+  mutate(duration = time_taken - throughput_time,
+         idle_time = as.numeric(throughput_time - lag(throughput_time)))
+  elog$idle_time <- replace_na(elog$idle_time, 0)
+  elog$process_total <- elog$cycle_time + elog$idle_time
+
+  elog %>% group_by(case_id) %>%
 
   elog$difference <- if_else(is.na(elog$next_start),
         difftime(elog$end, lag(elog$end), units = "mins"),
@@ -87,13 +99,19 @@ event <- log_df %>% ungroup() %>%
 
 
 events <- event %>% filter_activity_frequency(percentage = 0.7)
-graph  <- processmapR::process_map(events, type_edges = performance(mean, units = "days"), render = F)
+graph  <- processmapR::process_map(events, type_edges = performance(sum, units = "days"), render = F)
 model  <- DiagrammeR::add_global_graph_attrs(graph,
                                             attr      = c("rankdir", "splines"),
                                             value     = c("LR", "ortho"),
                                             attr_type = c("graph", "graph"))
 
-animate_process(events, model, mode = "relative", duration = 240)
+animate_process(events, model, mode = "relative", duration = 600)
 
 
 df <- precedence_matrix(loan, type = "relative_consequent") %>% plot()
+
+
+
+patients %>%
+  filter_trim(end_activities = "MRI SCAN", reverse = TRUE) %>%
+  process_map(type = performance())
